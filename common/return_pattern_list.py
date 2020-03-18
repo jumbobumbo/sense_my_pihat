@@ -35,6 +35,6 @@ class PatternList:
         for colour, values in self.pattern_json.items():
             for intensity, idx in values.items():
                 for i in idx:
-                    return_list[i][self.rgb["colour"]] = int(intensity)
+                    return_list[i][self.rgb[colour]] = int(intensity)
         return return_list
 
