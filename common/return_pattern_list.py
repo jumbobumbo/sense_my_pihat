@@ -16,7 +16,7 @@ class PatternList:
         with open(json_file, "r") as f:
             self.__pattern_json = json.load(f)
 
-    def _create_base_list(self):
+    def _create_base_list(self) -> list:
         """
         creates list of 64 elements from the "base" key in pattern_json
         the key is then deleted from the dict
@@ -26,15 +26,26 @@ class PatternList:
         del self.pattern_json["base"]
         return base_list
 
-    def create_pattern_list(self):
+    def create_pattern_list(self) -> list:
         """
-        creates RGB list for pattern
+        creates RGB list (of lists) for pattern
         :return: list
         """
         return_list = self._create_base_list()
+        ######################################################
+        # the below doesn't work, i don't know why
+        ######################################################
+        # for colour, values in self.pattern_json.items():
+        #     for intensity, idx in values.items():
+        #         for i in idx:
+        #             return_list[i][self.rgb[colour]] = int(intensity)
+        #####################################################
+        # so for the moment i'm doing this
         for colour, values in self.pattern_json.items():
             for intensity, idx in values.items():
+                update_val = [0, 0]
+                update_val.insert(self.rgb[colour], int(intensity))
                 for i in idx:
-                    return_list[i][self.rgb[colour]] = int(intensity)
+                    return_list[i] = update_val
         return return_list
 
