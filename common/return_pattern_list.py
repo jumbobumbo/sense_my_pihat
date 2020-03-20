@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+from copy import deepcopy
 
 
 class PatternList:
@@ -22,9 +23,7 @@ class PatternList:
         the key is then deleted from the dict
         :return: base list
         """
-        base_list = [[self.pattern_json["base"][0],
-                      self.pattern_json["base"][1],
-                      self.pattern_json["base"][0]] for _ in range(0, 64)]
+        base_list = [deepcopy(self.pattern_json["base"]) for _ in range(0, 64)]
         del self.pattern_json["base"]
         return base_list
 
