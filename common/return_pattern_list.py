@@ -22,7 +22,9 @@ class PatternList:
         the key is then deleted from the dict
         :return: base list
         """
-        base_list = [self.pattern_json["base"]] * 64
+        base_list = [[self.pattern_json["base"][0],
+                      self.pattern_json["base"][1],
+                      self.pattern_json["base"][0]] for _ in range(0, 64)]
         del self.pattern_json["base"]
         return base_list
 
@@ -32,20 +34,8 @@ class PatternList:
         :return: list
         """
         return_list = self._create_base_list()
-        ######################################################
-        # the below doesn't work, i don't know why
-        ######################################################
-        # for colour, values in self.pattern_json.items():
-        #     for intensity, idx in values.items():
-        #         for i in idx:
-        #             return_list[i][self.rgb[colour]] = int(intensity)
-        #####################################################
-        # so for the moment i'm doing this
         for colour, values in self.pattern_json.items():
             for intensity, idx in values.items():
-                update_val = [0, 0]
-                update_val.insert(self.rgb[colour], int(intensity))
                 for i in idx:
-                    return_list[i] = update_val
+                    return_list[i][self.rgb[colour]] = int(intensity)
         return return_list
-
