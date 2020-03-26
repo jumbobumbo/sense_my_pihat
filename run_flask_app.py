@@ -1,6 +1,6 @@
 from subprocess import check_output
 from urllib.parse import unquote
-import re
+from re import findall
 from flask import Flask, escape, request
 from sense_hat import SenseHat
 from common.return_pattern_list import PatternList
@@ -18,11 +18,11 @@ def send_command() -> str:
     jumble.json
 
     b: directly from input - nested lists [R, G, B] - 64 elements
-    [[255, 255, 255] *64]
+    [[255, 255, 255]] * 64
 
     get: pattern values
     RGB values as nested lists:
-    [[255, 255, 255] *64]
+    [[255, 255, 255]] * 64
     :return: str
     """
     if len(request.args) != 1:
@@ -46,7 +46,7 @@ def test_flask() -> str:
     return "/command is where you really want to be"
 
 
-def list_decoder(list_to_decode) -> list:
+def list_decoder(list_to_decode: str) -> list:
     """
     parses the list supplied via the URL and makes it into a readable format for sense.set_pixels()
     :param list_to_decode: str
@@ -55,7 +55,7 @@ def list_decoder(list_to_decode) -> list:
     decoded_list = []
     sub_list = []
     for index, value in enumerate(unquote(list_to_decode).split(",")):
-        sub_list.append(int(re.findall(r"\d+", value)[0]))
+        sub_list.append(int(findall(r"\d+", value)[0]))
         if (index + 1) % 3 == 0:
             decoded_list.append(sub_list)
             sub_list = []
