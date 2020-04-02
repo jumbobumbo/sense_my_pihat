@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  function validateForm(formdata) {
+    var fData = document.getElementById(formdata)
+    for (var i = 0; i < fData.length - 1; i++){
+      if (fData[i].value.length == 0 || isNaN(Number(fData[i].value)) || Number(fData[i].value) > 255) {
+        alert("must be between 0-255. Not " + fData[i].value);
+        return false;
+      }
+    }
+  }
+  </script>
+<style>
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(241, 241, 241);
+    background-color: rgb(44, 42, 42);
+    }
+* {box-sizing: border-box;}
+
+.form-inline {  
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+}
+
+.form-inline label {
+  margin: 5px 10px 5px 0;
+}
+
+.form-inline input {
+  vertical-align: middle;
+  margin: 5px 10px 5px 0;
+  padding: 10px;
+  background-color: rgb(68, 67, 67);
+  border: 1px solid #ddd;
+}
+
+.form-inline button {
+  padding: 10px 20px;
+  background-color: dodgerblue;
+  border: 1px solid #ddd;
+  color: white;
+  cursor: pointer;
+}
+
+.form-inline button:hover {
+  background-color: royalblue;
+}
+
+@media (max-width: 800px) {
+  .form-inline input {
+    margin: 10px 0;
+  }
+  
+  .form-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+</style>
+</head>
+<body>
+
+<h1>Configure Sense hat display colours (RGB values)</h1>
+<br><br>
+<h2>Set whole screen to single colour</h2>
+<form id="single" class="form-inline" action="/ui-command/" method="POST" onsubmit="return validateForm(id)">
+  <div>
+    <label for="text">Red:</label>
+    <input type="text" placeholder="255" name="red">
+    <label for="text">Green:</label>
+    <input type="text" placeholder="255" name="green">
+    <label for="text">Blue:</label>
+    <input type="text" placeholder="255" name="blue">
+    <p><button type="submit">Submit</button></p>
+  </div>
+</form>
+<br><br>
+<h2>Set each quarter</h2>
+<form id="multi" class="form-inline" action="/ui-command/" method="POST" onsubmit="return validateForm(id)">
+  <div>
+    <p><b>First:</b></p>
+    <label for="text">Red:</label>
+    <input type="text" placeholder="255" name="red">
+    <label for="text">Green:</label>
+    <input type="text" placeholder="255" name="green">
+    <label for="text">Blue:</label>
+    <input type="text" placeholder="255" name="blue">
+    <br>
+    <p><b>Second:</b></p>
+    <label for="text">Red:</label>
+    <input type="text" placeholder="255" name="red">
+    <label for="text">Green:</label>
+    <input type="text" placeholder="255" name="green">
+    <label for="text">Blue:</label>
+    <input type="text" placeholder="255" name="blue">
+    <br>
+    <p><b>Third:</b></p>
+    <label for="text">Red:</label>
+    <input type="text" placeholder="255" name="red">
+    <label for="text">Green:</label>
+    <input type="text" placeholder="255" name="green">
+    <label for="text">Blue:</label>
+    <input type="text" placeholder="255" name="blue">
+    <br>
+    <p><b>Fourth:</b></p>
+    <label for="text">Red:</label>
+    <input type="text" placeholder="255" name="red">
+    <label for="text">Green:</label>
+    <input type="text" placeholder="255" name="green">
+    <label for="text">Blue:</label>
+    <input type="text" placeholder="255" name="blue">
+    <br><br>
+    <button type="submit">Submit</button>
+  </div>
+</form>
+
+</body>
+</html>

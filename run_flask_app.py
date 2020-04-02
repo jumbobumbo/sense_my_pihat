@@ -1,12 +1,13 @@
 from subprocess import check_output
 from urllib.parse import unquote
 from re import findall
-from flask import Flask, escape, request
+from flask import Flask, escape, request, render_template
 from sense_hat import SenseHat
 from common.return_pattern_list import PatternList
+from common.translate_data import ProcessMultiDict
 
 # basic flask application
-app = Flask(__name__)  # flask object
+app = Flask(__name__, static_url_path="", template_folder='web_pages')  # flask object
 sense = SenseHat()  # sense hat object
 
 
@@ -35,6 +36,23 @@ def send_command() -> str:
             return str(sense.get_pixels())
         else:
             return f"invalid args: {request.args}"
+
+
+@app.route("/ui-command/", methods=['GET', 'POST'])
+def ui_command(red=None, green=None, blue=None):
+    """
+    ui page
+    """
+    if request.method == "POST":
+        processed_data = ProcessMultiDict(request.form).post_data_to_nested_lists()
+        img = []
+        for nested_list in processed_data:
+            # find the amount of pixels we need to cover
+            for _ in range(0, int(64 / len(processed_data))):
+                img.append(nested_list)
+        # send img data to hat
+        sense.set_pixels(img)
+    return render_template("config.html", red=red, green=green, blue=blue)
 
 
 @app.route("/")
@@ -67,4 +85,4 @@ host_ip = str(check_output(['hostname', '-I'])).strip("b'").split(" ")[0]
 
 
 if __name__ == "__main__":
-    app.run(host=host_ip, port=8082)
+    app.run(host=host_ip, port=8082, debug=True)
