@@ -7,17 +7,25 @@ class PatternList:
     """
     creates a pattern list from a json file
     """
-    def __init__(self, json_file: str):
-        self.pattern_json = Path('patterns/', json_file)
+    def __init__(self, json_data, is_file: bool = True):
+        """
+        if we are working with a json file, we want to parse it into a json object/ dict
+        if we are working directly with a json object (post args) then we don't need to do anything extra
+        """
+        if is_file:
+            self._pattern_json = Path('patterns/', json_data)
+            self.target_json = self._pattern_json
+        else:
+            self.target_json = json_data
         self.rgb = {"red": 0, "green": 1, "blue": 2}
 
     @property
-    def pattern_json(self) -> dict:
+    def _pattern_json(self) -> dict:
         return self.__pattern_json
 
-    @pattern_json.setter
-    def pattern_json(self, json_file):
-        with open(json_file, "r") as f:
+    @_pattern_json.setter
+    def _pattern_json(self, json_data):
+        with open(json_data, "r") as f:
             self.__pattern_json = json.load(f)
 
     def _create_base_list(self) -> list:
@@ -26,8 +34,8 @@ class PatternList:
         the key is then deleted from the dict
         :return: base list
         """
-        base_list = [deepcopy(self.pattern_json["base"]) for _ in range(0, 64)]
-        del self.pattern_json["base"]
+        base_list = [deepcopy(self.target_json["base"]) for _ in range(0, 64)]
+        del self.target_json["base"]
 
         return base_list
 
@@ -39,7 +47,7 @@ class PatternList:
         """
         return_list = self._create_base_list()
 
-        for colour, values in self.pattern_json.items():
+        for colour, values in self.target_json.items():
             for intensity, idx in values.items():
                 for i in idx:
                     return_list[i][self.rgb[colour]] = int(intensity)

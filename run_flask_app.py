@@ -11,7 +11,7 @@ app = Flask(__name__, static_url_path="", template_folder='web_pages')  # flask 
 sense = SenseHat()  # sense hat object
 
 
-@app.route("/command")
+@app.route("/get-command/", methods=['GET'])
 def send_command() -> str:
     """
     set: patterns
@@ -65,6 +65,18 @@ def ui_command(red=None, green=None, blue=None, qtype=None):
 
     # return html page
     return render_template("config.html", red=red, green=green, blue=blue, qtype=qtype)
+
+
+@app.route("/post-command/", methods=['POST'])
+def post_command(base=None, red=None, green=None, blue=None) -> str:
+    """
+    Dict of post key, values.
+    Creates a list of nested RGB lists and sends it to sense hat
+    If successful, sent list is returned as a str (blame flask)
+    :return: str
+    """
+    sense.set_pixels(PatternList(request.get_json(), False).create_pattern_list())
+    return str(sense.get_pixels())
 
 
 @app.route("/")
