@@ -41,7 +41,7 @@ def send_command() -> str:
             return f"invalid args: {request.args}"
 
 
-@app.route("/ui-command/", methods=['POST'])
+@app.route("/ui-command/", methods=['POST', 'GET'])
 def ui_command(red=None, green=None, blue=None, qtype=None):
     """
     ui page
