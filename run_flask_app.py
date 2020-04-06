@@ -1,9 +1,9 @@
 from subprocess import check_output
 from urllib.parse import unquote
 from re import findall
-from flask import Flask, escape, request, render_template
+from flask import Flask, request, render_template
 from sense_hat import SenseHat
-from common.return_pattern_list import PatternList
+from common.return_pattern_list import PatternList, GeneratePatternFromList
 from common.translate_data import ProcessMultiDict
 
 # basic flask application
@@ -28,31 +28,43 @@ def send_command() -> str:
     """
     if len(request.args) != 1:
         return f"number of commands must equal 1: number received: {len(request.args)}"
+
     for cmd, value in request.args.items():
         if cmd == "set":
             img = PatternList(value).create_pattern_list() if "json" in value else list_decoder(value)
             return str(sense.set_pixels(img))
+
         elif cmd == "get":
             return str(sense.get_pixels())
+
         else:
             return f"invalid args: {request.args}"
 
 
-@app.route("/ui-command/", methods=['GET', 'POST'])
-def ui_command(red=None, green=None, blue=None):
+@app.route("/ui-command/", methods=['POST'])
+def ui_command(red=None, green=None, blue=None, qtype=None):
     """
     ui page
     """
-    if request.method == "POST":
-        processed_data = ProcessMultiDict(request.form).post_data_to_nested_lists()
-        img = []
-        for nested_list in processed_data:
-            # find the amount of pixels we need to cover
-            for _ in range(0, int(64 / len(processed_data))):
-                img.append(nested_list)
-        # send img data to hat
-        sense.set_pixels(img)
-    return render_template("config.html", red=red, green=green, blue=blue)
+    form_copy = request.form.copy()  # we make a copy so its mutable
+
+    # qtype is used to define what pattern quartering we want (square or stripe) not for the colour values
+    # since we also support the entire screen being one colour (and therefore qtype not being in the form data)
+    # we either fetch qtype and set it to an appropriate varaible or set the var as 0 if it doesn't exist
+    if form_copy.get("qtype") is not None:
+        pattern_type = int(form_copy.get("qtype"))
+        form_copy.pop("qtype")
+
+    else:
+        pattern_type = 0
+
+    # process the user inputted data so it can be used for list generation 
+    processed_data = ProcessMultiDict(form_copy).post_data_to_nested_lists()
+    # send img data to hat - GeneratePatternFromList creates the required list of nested list for qtype 0 or 1
+    sense.set_pixels(GeneratePatternFromList(processed_data, pattern_type).pattern_gen())
+
+    # return html page
+    return render_template("config.html", red=red, green=green, blue=blue, qtype=qtype)
 
 
 @app.route("/")
@@ -72,11 +84,14 @@ def list_decoder(list_to_decode: str) -> list:
     """
     decoded_list = []
     sub_list = []
+
     for index, value in enumerate(unquote(list_to_decode).split(",")):
         sub_list.append(int(findall(r"\d+", value)[0]))
+
         if (index + 1) % 3 == 0:
             decoded_list.append(sub_list)
             sub_list = []
+
     return decoded_list
 
 

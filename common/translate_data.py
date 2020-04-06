@@ -1,4 +1,5 @@
 from collections import defaultdict
+from copy import deepcopy
 
 
 class ProcessMultiDict:
@@ -27,6 +28,7 @@ class ProcessMultiDict:
         creates a list of tuples (key, value)
         """
         self.__post_data = []
+
         for key, val in post_data.items(multi=True):
             self.__post_data.append((key, val))
     
@@ -43,6 +45,7 @@ class ProcessMultiDict:
         total_keys = len(set([key for key, _ in self.post_data]))  # total number of unique keys in data
         num_of_entries = int(len(self.post_data) / total_keys)  # total number of args sent
         arg_list = []
+
         # only 1 lot of data was sent
         if num_of_entries == 0:
             arg_list.append([int(val) for _, val in self.post_data])
@@ -50,11 +53,14 @@ class ProcessMultiDict:
         # more than one data lot was sent
         else:
             colour_dict = defaultdict(list)  # create dict
+
             for key, val in self.post_data:
                 colour_dict[key].append(val)  # add key:value or append to existing
+
             for i in range(0, num_of_entries):
                 nest_list = []
                 for key, val in colour_dict.items():
                     nest_list.append(int(val[i]))
                 arg_list.append(nest_list)  # append finished nested list
+
             return arg_list
