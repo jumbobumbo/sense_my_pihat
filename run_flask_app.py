@@ -70,7 +70,8 @@ def ui_command(red=None, green=None, blue=None, qtype=None):
 @app.route("/post-command/", methods=['POST'])
 def post_command(base=None, red=None, green=None, blue=None) -> str:
     """
-    Dict of post key, values.
+    Expects args to be in json format, example:
+      requests.post("http://IP/post-command/", json=args)
     Creates a list of nested RGB lists and sends it to sense hat
     If successful, sent list is returned as a str (blame flask)
     :return: str
