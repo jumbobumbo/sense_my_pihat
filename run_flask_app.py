@@ -46,22 +46,23 @@ def ui_command(red=None, green=None, blue=None, qtype=None):
     """
     ui page
     """
-    form_copy = request.form.copy()  # we make a copy so its mutable
+    if request.method == "POST":
+        form_copy = request.form.copy()  # we make a copy so its mutable
 
-    # qtype is used to define what pattern quartering we want (square or stripe) not for the colour values
-    # since we also support the entire screen being one colour (and therefore qtype not being in the form data)
-    # we either fetch qtype and set it to an appropriate varaible or set the var as 0 if it doesn't exist
-    if form_copy.get("qtype") is not None:
-        pattern_type = int(form_copy.get("qtype"))
-        form_copy.pop("qtype")
+        # qtype is used to define what pattern quartering we want (square or stripe) not for the colour values
+        # since we also support the entire screen being one colour (and therefore qtype not being in the form data)
+        # we either fetch qtype and set it to an appropriate varaible or set the var as 0 if it doesn't exist
+        if form_copy.get("qtype") is not None:
+            pattern_type = int(form_copy.get("qtype"))
+            form_copy.pop("qtype")
 
-    else:
-        pattern_type = 0
+        else:
+            pattern_type = 0
 
-    # process the user inputted data so it can be used for list generation 
-    processed_data = ProcessMultiDict(form_copy).post_data_to_nested_lists()
-    # send img data to hat - GeneratePatternFromList creates the required list of nested list for qtype 0 or 1
-    sense.set_pixels(GeneratePatternFromList(processed_data, pattern_type).pattern_gen())
+        # process the user inputted data so it can be used for list generation 
+        processed_data = ProcessMultiDict(form_copy).post_data_to_nested_lists()
+        # send img data to hat - GeneratePatternFromList creates the required list of nested list for qtype 0 or 1
+        sense.set_pixels(GeneratePatternFromList(processed_data, pattern_type).pattern_gen())
 
     # return html page
     return render_template("config.html", red=red, green=green, blue=blue, qtype=qtype)
