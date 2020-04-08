@@ -111,10 +111,10 @@ def post_rotation() -> str:
     bg = post_data.get("background") if post_data.get("background") else False
 
     # if cmd is not kill, we start the rotation
-    # 
     if post_data.get("cmd") != "kill":
         GlobalVales.active_f = Rotate(sense, r_vals, post_data.get("re_draw")).func_runner(post_data.get("cmd"), bg) 
     else:
+        # remove file, kill the thread
         if path.exists(GlobalVales.active_f):
             remove(GlobalVales.active_f)
 

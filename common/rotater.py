@@ -1,5 +1,5 @@
 from sense_hat import SenseHat
-from threading import Thread, Event
+from threading import Thread
 from time import sleep
 from os import path
 from pathlib import Path
@@ -21,12 +21,14 @@ class Rotate:
         :param target_function: value from func_runner dict (funcs)
         this is passed across to keep alive
         """
-        active_file = Path("data/", "rotating")
+        active_file = Path("data/", "rotating")  # the file which is used as the trigger value
 
         def _keep_alive():
             """
             Keeps the process running
             """
+            # we create a file here, this will then be used in the below file
+            # we kill the thread later in flask by deleting this file - this will improve
             if not path.exists(active_file):
                 with open(active_file, "x") as r:
                     pass
