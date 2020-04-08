@@ -15,7 +15,7 @@ class Rotate:
         self.rotate_vals = rotate_vals
         self.re_draw = re_draw
 
-    def _thread_runner(self, target_func: object):
+    def _thread_runner(self, target_func: object) -> object:
         """
         this is called to start a thread
         :param target_function: value from func_runner dict (funcs)
@@ -66,7 +66,7 @@ class Rotate:
     def _smooth_rotation(self):
         return "not implemented"
     
-    def func_runner(self, run_func: str, back_ground: bool = False):
+    def func_runner(self, run_func: str, back_ground: bool = False) -> object:
         """
         Provide this function a key to run desired function (some additional params) and
         if you want this task to run in the background
@@ -88,4 +88,3 @@ class Rotate:
             return self._thread_runner(called_func)
         else:
             return called_func[0](called_func[1]) if type(called_func) == list else called_func()
-
