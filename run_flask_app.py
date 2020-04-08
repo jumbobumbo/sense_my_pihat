@@ -3,8 +3,11 @@ from urllib.parse import unquote
 from re import findall
 from flask import Flask, request, render_template
 from sense_hat import SenseHat
+from os import remove, path
 from common.return_pattern_list import PatternList, GeneratePatternFromList
 from common.translate_data import ProcessMultiDict
+from common.rotater import Rotate
+
 
 # basic flask application
 app = Flask(__name__, static_url_path="", template_folder='web_pages')  # flask object
@@ -68,17 +71,55 @@ def ui_command(red=None, green=None, blue=None, qtype=None):
     return render_template("config.html", red=red, green=green, blue=blue, qtype=qtype)
 
 
-@app.route("/post-command/", methods=['POST'])
-def post_command(base=None, red=None, green=None, blue=None) -> str:
+@app.route("/post-set-img/", methods=['POST'])
+def post_set_img() -> str:
     """
     Expects args to be in json format, example:
-      requests.post("http://IP/post-command/", json=args)
+      requests.post("http://IP/post-set-img/", json=args)
     Creates a list of nested RGB lists and sends it to sense hat
     If successful, sent list is returned as a str (blame flask)
     :return: str
     """
     sense.set_pixels(PatternList(request.get_json(), False).create_pattern_list())
     return str(sense.get_pixels())
+
+
+@app.route("/post_rotation/", methods=['POST'])
+def post_rotation() -> str:
+    """
+    Sets rotation of image
+
+    Expects cmd to be in json format, example:
+      requests.post("http://IP/post-command/", json=cmd)
+    Example json: {"cmd": "simple", "background": True, "rotate_vals": [0, 90], "re_draw": True}
+    Minimum required keys: "cmd"
+    Optional: "rotate_vals", "re_draw", "background"
+    To kill the rotation, send the following json: {"cmd": kill"}
+    """
+    post_data = request.get_json()
+
+    # check we have our required key
+    if post_data.get("cmd") == None:
+        raise ValueError(f"{key} is a required key")
+
+    # the below three ifs allow only "cmd" to be the required key in the post data
+    if not post_data.get("re_draw"):
+        post_data["re_draw"] = True  # Redrawing the image is default to True
+
+    r_vals = post_data.get("rotate_vals") if post_data.get("rotate_vals") else []  
+
+    bg = post_data.get("background") if post_data.get("background") else False
+
+    # if cmd is not kill, we start the rotation
+    # 
+    if post_data.get("cmd") != "kill":
+        GlobalVales.active_f = Rotate(sense, r_vals, post_data.get("re_draw")).func_runner(post_data.get("cmd"), bg) 
+    else:
+        if path.exists(GlobalVales.active_f):
+            remove(GlobalVales.active_f)
+
+    # return last rotation value
+    return str(sense._rotation)
 
 
 @app.route("/")
@@ -107,6 +148,13 @@ def list_decoder(list_to_decode: str) -> list:
             sub_list = []
 
     return decoded_list
+
+
+class GlobalVales:
+    """
+    I just contain and values that may need to passed around functions
+    """
+    pass
 
 
 # get ip address of device
