@@ -64,7 +64,7 @@ class Rotate:
         return self.sense.flip_v() if vertical else self.sense.flip_h()
         
     def _smooth_rotation(self):
-        print("smooth rotate")
+        return "not implemented"
     
     def func_runner(self, run_func: str, back_ground: bool = False):
         """
@@ -87,5 +87,5 @@ class Rotate:
         if back_ground:
             return self._thread_runner(called_func)
         else:
-            called_func[0](called_func[1]) if type(called_func) == list else called_func()
+            return called_func[0](called_func[1]) if type(called_func) == list else called_func()
 
