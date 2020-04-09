@@ -22,7 +22,7 @@ class Rotate:
         """
         def _keep_alive():
             """
-            Keeps the process running
+            Keeps the thread running
             """
             while global_vals.t_status:  # if True, we keep rotating the display image
                 if type(target_func) == list:
@@ -76,8 +76,8 @@ class Rotate:
         
         # fetch function to run from above dict
         called_func = funcs[run_func]
-        # check if its a function with an addition param
-        if back_ground:
+
+        if back_ground:  # send task to background task
             return self._thread_runner(called_func)
-        else:
+        else: # keep within current thread - check if its a function with an addition param
             return called_func[0](called_func[1]) if type(called_func) == list else called_func()

@@ -125,7 +125,8 @@ def test_flask() -> str:
     simply for test
     :return: str
     """
-    return "/command is where you really want to be"
+    return "<h1>Pages:</h1><p>/ui-command/</p><p>/get-command/</p><p>/post_rotation/</p>" \
+            "<p>/post-set-img/</p>"
 
 
 def list_decoder(list_to_decode: str) -> list:
