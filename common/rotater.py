@@ -1,8 +1,7 @@
 from sense_hat import SenseHat
 from threading import Thread
 from time import sleep
-from os import path
-from pathlib import Path
+from common import global_vals
 
 class Rotate:
     def __init__(self, sense: object, rotate_vals: list = [], re_draw: bool = True):
@@ -19,21 +18,13 @@ class Rotate:
         """
         this is called to start a thread
         :param target_function: value from func_runner dict (funcs)
-        this is passed across to keep alive
+        we will keep the passed function alive until global_vals.t_status is False
         """
-        active_file = Path("data/", "rotating")  # the file which is used as the trigger value
-
         def _keep_alive():
             """
             Keeps the process running
             """
-            # we create a file here, this will then be used in the below file
-            # we kill the thread later in flask by deleting this file - this will improve
-            if not path.exists(active_file):
-                with open(active_file, "x") as r:
-                    pass
-
-            while path.exists(Path("data/", "rotating")):
+            while global_vals.t_status:  # if True, we keep rotating the display image
                 if type(target_func) == list:
                     target_func[0](target_func[1])
                 else:
@@ -41,8 +32,10 @@ class Rotate:
 
         th = Thread(target=_keep_alive, args=())
         th.daemon = True
-        th.start()  # start the thread
-        return active_file  # return the trigger file so we can kill the thread later
+        # below global variable controls the life and death of the thread in _keep_alive()
+        # it is only initlised if run_flask_app is main
+        global_vals.t_status = True  # set active thread status to True
+        return th.start()  # start the thread
 
     def _simple_rotation(self) -> str:
         """

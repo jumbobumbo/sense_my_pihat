@@ -3,10 +3,10 @@ from urllib.parse import unquote
 from re import findall
 from flask import Flask, request, render_template
 from sense_hat import SenseHat
-from os import remove, path
 from common.return_pattern_list import PatternList, GeneratePatternFromList
 from common.translate_data import ProcessMultiDict
 from common.rotater import Rotate
+from common import global_vals
 
 
 # basic flask application
@@ -112,14 +112,11 @@ def post_rotation() -> str:
 
     # if cmd is not kill, we start the rotation
     if post_data.get("cmd") != "kill":
-        GlobalVales.active_f = Rotate(sense, r_vals, post_data.get("re_draw")).func_runner(post_data.get("cmd"), bg) 
+        return str(Rotate(sense, r_vals, post_data.get("re_draw")).func_runner(post_data.get("cmd"), bg)) 
     else:
-        # remove file, kill the thread
-        if path.exists(GlobalVales.active_f):
-            remove(GlobalVales.active_f)
-
-    # return last rotation value
-    return str(sense._rotation)
+        global_vals.t_status = False  # terminate active thread
+        # return last rotation value
+        return f"Thread terminated, last rotation value: {sense._rotation}"
 
 
 @app.route("/")
@@ -150,16 +147,10 @@ def list_decoder(list_to_decode: str) -> list:
     return decoded_list
 
 
-class GlobalVales:
-    """
-    I just contain and values that may need to passed around functions
-    """
-    pass
-
-
 # get ip address of device
 host_ip = str(check_output(['hostname', '-I'])).strip("b'").split(" ")[0]
 
 
 if __name__ == "__main__":
+    global_vals.initialize()  # start global values function
     app.run(host=host_ip, port=8082, debug=True)
