@@ -43,7 +43,7 @@ class PatternList:
         """
         creates RGB list (of lists) for pattern
         :return: list
-        Example return list: [[213, 231, 1], [32, 1, 233], [65, 100, 190], [200, 190, 0]]
+        Example return list: [[213, 231, 1], [32, 1, 233], [65, 100, 190], [200, 190, 0] ...]
         """
         return_list = self._create_base_list()
 
@@ -73,6 +73,18 @@ class GeneratePatternFromList:
             2: [32, 40, 48, 56],
             3: [36, 44, 52, 60]
         }
+    
+    @property
+    def color_list(self) -> list:
+        return self._color_list
+
+    @color_list.setter
+    def color_list(self, cl):
+        # verifies the input is nested lists
+        unwanted_elements = [f"must be nested lists, not {x}" for x in cl if type(x) != list]
+        if unwanted_elements:
+            raise ValueError(unwanted_elements)
+        self._color_list = cl
 
     def pattern_gen(self) -> list:
         """
@@ -82,7 +94,7 @@ class GeneratePatternFromList:
         if self.style == 0:
             img = []
 
-            for nested_list in self.color_list:
+            for nested_list in self._color_list:
                 # find the amount of pixels we need to cover
                 for _ in range(0, int(64 / len(self.color_list))):
                     img.append(nested_list)

@@ -35,7 +35,8 @@ def send_command() -> str:
     for cmd, value in request.args.items():
         if cmd == "set":
             img = PatternList(value).create_pattern_list() if "json" in value else list_decoder(value)
-            return str(sense.set_pixels(img))
+            sense.set_pixels(img)
+            return str(sense.get_pixels())
 
         elif cmd == "get":
             return str(sense.get_pixels())

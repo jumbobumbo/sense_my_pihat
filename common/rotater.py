@@ -1,6 +1,6 @@
 from sense_hat import SenseHat
-from threading import Thread
-from time import sleep
+from threading import Thread, enumerate
+from time import sleep, time
 from common import global_vals
 
 class Rotate:
@@ -14,7 +14,8 @@ class Rotate:
         self.rotate_vals = rotate_vals
         self.re_draw = re_draw
 
-    def _thread_runner(self, target_func: object) -> object:
+    @staticmethod
+    def _thread_runner(target_func: object) -> object:
         """
         this is called to start a thread
         :param target_function: value from func_runner dict (funcs)
@@ -24,13 +25,22 @@ class Rotate:
             """
             Keeps the thread running
             """
-            while global_vals.t_status:  # if True, we keep rotating the display image
+            while global_vals.t_status:  # if True, we keep the calling the function
                 if type(target_func) == list:
                     target_func[0](target_func[1])
                 else:
                     target_func()
 
-        th = Thread(target=_keep_alive, args=())
+        # for cleanliness we should terminate any other background tasks before spawning a new one
+        if global_vals.t_status:
+            global_vals.t_status = False
+            for thread in enumerate():
+                if thread.name == global_vals.t_name:
+                    thread.join(3)
+        
+        # updates global var so we can check its alive status when spawning a new thread
+        global_vals.t_name = f"rotation_{time()}"
+        th = Thread(target=_keep_alive, args=(), name=global_vals.t_name)
         th.daemon = True
         # below global variable controls the life and death of the thread in _keep_alive()
         # it is only initlised if run_flask_app is main
