@@ -1,16 +1,16 @@
-Pi Sense hat project.
+#Pi Sense hat project.
 
 A flask interface designed to allow images to be displayed on the sense hat's 8 x 8 display (via RGB values) remotely.
 
-- RGB data can be sent to the display in the following ways:
-  - GET:
+* RGB data can be sent to the display in the following ways:
+  1. GET:
     for a json file on local storage DIR 'patterns':
     get-command/?set=jumble.json
 
     directly sending the RGB values:
     get-command/?set=[[255,255,255], [255,255,255], [255,255,255], .....] (len must be 64, no null values)
 
-  - POST:
+  2. POST:
     UI PAGE: ui-command/
 
     post-set-img/
@@ -40,24 +40,24 @@ A flask interface designed to allow images to be displayed on the sense hat's 8 
     }
     r = requests.post("http://IP/post-set-img/", json=json_data)
 
-- Rotating the displayed image:
-    Example of a post cmd window, rotating an image already loaded onto the display:
-    import requests
-    json_data = {
-        "cmd": "simple", 
-        "rotate_vals": [0, 90, 180, 270], 
-        "re_draw": True, 
-        "background": True
+* Rotating the displayed image:
+    1. Example of a post cmd window, rotating an image already loaded onto the display:
+       import requests
+      json_data = {
+          "cmd": "simple", 
+          "rotate_vals": [0, 90, 180, 270], 
+          "re_draw": True, 
+          "background": True
         }
-    r = requests.post("http://IP/post_rotation/", json=json_data)
+      r = requests.post("http://IP/post_rotation/", json=json_data)
 
-    ending the rotation:
-    json_data = {"cmd": "kill"}
+      ending the rotation:
+      json_data = {"cmd": "kill"}
 
-- Fetching the loaded image's RGB values can be done by:
-  - GET:
-    get-command/?get
-    it is returned when setting an image via get-command/
-  - POST:
-    Current RGB values are always returned by post-set-img/
-    Using the above post-set-img example, 'r.text' would give you the RGB values.
+* Fetching the loaded image's RGB values can be done by:
+  1. GET:
+      get-command/?get
+      it is returned when setting an image via get-command/
+  2. POST:
+      Current RGB values are always returned by post-set-img/
+      Using the above post-set-img example, 'r.text' would give you the RGB values.
