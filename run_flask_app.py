@@ -88,7 +88,7 @@ def post_set_img() -> str:
 @app.route("/post_rotation/", methods=['POST'])
 def post_rotation() -> str:
     """
-    Sets rotation of image
+    Sets rotation of image (continous rotation, not static orientation)
 
     Expects cmd to be in json format, example:
       requests.post("http://IP/post-command/", json=cmd)
@@ -118,6 +118,38 @@ def post_rotation() -> str:
         global_vals.t_status = False  # terminate active thread
         # return last rotation value
         return f"Thread terminated, last rotation value: {sense._rotation}"
+
+
+@app.route("/post_orientation/",  methods=['POST'])
+def set_orientation() -> str:
+    """
+    Sets the orientation of the screen 
+    The angle to rotate the LED matrix though. 0 is with the Raspberry Pi HDMI port facing downwards.
+    Example post params: json={"rotation": 270}
+    Allowed values [0, 90, 180, 270]
+    Returns: str
+    """
+    post_data = request.get_json()
+
+    # this is set to check for None, due to passing a param of 0
+    # using if not would show a false positive
+    if post_data.get("rotation") == None:
+        raise KeyError("param name must be 'rotation'")
+    if post_data["rotation"] not in [0, 90, 180, 270]:
+        raise ValueError(f"{post_data} not in allowed int values: [0, 90, 180, 270]")
+
+    return str(sense.set_rotation(post_data["rotation"]))
+
+
+@app.route("/post_display_text/",  methods=['POST'])
+def display_text() -> str:
+    """
+    displays the inputted text, colour (text, background) and scroll speed
+    Example post params: json={"text_str": "testing", "scroll": 0.1, "text_color": [R, G, B], "back_color": [R, G, B]}
+    :return: str
+    """
+    post_data = request.get_json()
+    return str(sense.show_message(post_data["text_str"], post_data["scroll"], post_data["text_color"], post_data["back_color"]))
 
 
 @app.route("/")

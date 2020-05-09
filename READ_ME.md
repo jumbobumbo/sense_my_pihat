@@ -67,3 +67,24 @@ A flask interface designed to allow images to be displayed on the sense hat's 8 
 ### 2. POST:  
     Current RGB values are always returned by post-set-img/  
     Using the above post-set-img example, 'r.text' would give you the RGB values.  
+
+
+## Setting the screen orientation:  
+  
+### Example setting the orientation to 270 degrees:  
+
+  import requests  
+  r = requests.post("http://IP//post_orientation/", json={"rotation": 270})  
+
+## Displaying text:  
+
+### Example sending the text 'yes' to the display (colour text and background):  
+
+  import requests  
+  json_data={  
+    "text_str": "yes",  
+    "text_color": [0, 50, 50],  
+    "back_color": [200, 0, 0],  
+    "scroll": 0.1  
+  }  
+  r = requests.post("http://IP//post_orientation/", json=json_data)  
