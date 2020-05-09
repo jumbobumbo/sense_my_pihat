@@ -74,7 +74,7 @@ A flask interface designed to allow images to be displayed on the sense hat's 8 
 ### Example setting the orientation to 270 degrees:  
 
   import requests  
-  r = requests.post("http://IP//post_orientation/", json={"rotation": 270})  
+  r = requests.post("http://IP/post_orientation/", json={"rotation": 270})  
 
 ## Displaying text:  
 
@@ -87,4 +87,4 @@ A flask interface designed to allow images to be displayed on the sense hat's 8 
     "back_color": [200, 0, 0],  
     "scroll": 0.1  
   }  
-  r = requests.post("http://IP//post_orientation/", json=json_data)  
+  r = requests.post("http://IP/post_display_text/", json=json_data)  
