@@ -55,6 +55,7 @@ class PatternList:
         return return_list
 
 
+
 class GeneratePatternFromList:
     """
     Generates a pattern from a list of nested lists, and a int value
@@ -73,7 +74,7 @@ class GeneratePatternFromList:
             2: [32, 40, 48, 56],
             3: [36, 44, 52, 60]
         }
-    
+
     @property
     def color_list(self) -> list:
         return self._color_list
@@ -113,7 +114,7 @@ class GeneratePatternFromList:
                     for pixel in range(co_ord, co_ord + (3+1)):
                         img[pixel] = self.color_list[colour_list_index]
 
-                colour_list_index += 1  # move onto the next quarter 
-            
+                colour_list_index += 1  # move onto the next quarter
+
             # return the generated list
             return img

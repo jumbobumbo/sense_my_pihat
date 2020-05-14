@@ -120,7 +120,7 @@ def post_rotation() -> str:
         return f"Thread terminated, last rotation value: {sense._rotation}"
 
 
-@app.route("/post_orientation/",  methods=['POST'])
+@app.route("/post_orientation/", methods=['POST'])
 def set_orientation() -> str:
     """
     Sets the orientation of the screen 
@@ -141,7 +141,7 @@ def set_orientation() -> str:
     return str(sense.set_rotation(post_data["rotation"]))
 
 
-@app.route("/post_display_text/",  methods=['POST'])
+@app.route("/post_display_text/", methods=['POST'])
 def display_text() -> str:
     """
     displays the inputted text, colour (text, background) and scroll speed
@@ -151,6 +151,14 @@ def display_text() -> str:
     post_data = request.get_json()
     return str(sense.show_message(post_data["text_str"], post_data["scroll"], post_data["text_color"], post_data["back_color"]))
 
+
+@app.route("/show_temp/", methods=["GET"])
+def display_temp() -> str:
+    """
+    Shows the current temp - fetched from sense hat
+    :return: str
+    """
+    pass
 
 @app.route("/")
 def test_flask() -> str:
@@ -183,6 +191,10 @@ def list_decoder(list_to_decode: str) -> list:
 
 # get ip address of device
 host_ip = str(check_output(['hostname', '-I'])).strip("b'").split(" ")[0]
+
+
+# global functions
+def ctemp(): return int(sense.get_temperature())  # returns temp from sense hat
 
 
 if __name__ == "__main__":
