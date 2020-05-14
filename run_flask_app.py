@@ -7,6 +7,7 @@ from common.return_pattern_list import PatternList, GeneratePatternFromList
 from common.translate_data import ProcessMultiDict
 from common.rotater import Rotate
 from common import global_vals
+from common.flask_input_manipulator import ImgTempDict as ITD
 
 
 # basic flask application
@@ -107,13 +108,13 @@ def post_rotation() -> str:
     if not post_data.get("re_draw"):
         post_data["re_draw"] = True  # Redrawing the image is default to True
 
-    r_vals = post_data.get("rotate_vals") if post_data.get("rotate_vals") else []  
+    r_vals = post_data.get("rotate_vals") if post_data.get("rotate_vals") else []
 
     bg = post_data.get("background") if post_data.get("background") else False
 
     # if cmd is not kill, we start the rotation
     if post_data.get("cmd") != "kill":
-        return str(Rotate(sense, r_vals, post_data.get("re_draw")).func_runner(post_data.get("cmd"), bg)) 
+        return str(Rotate(sense, r_vals, post_data.get("re_draw")).func_runner(post_data.get("cmd"), bg))
     else:
         global_vals.t_status = False  # terminate active thread
         # return last rotation value
@@ -123,7 +124,7 @@ def post_rotation() -> str:
 @app.route("/post_orientation/", methods=['POST'])
 def set_orientation() -> str:
     """
-    Sets the orientation of the screen 
+    Sets the orientation of the screen
     The angle to rotate the LED matrix though. 0 is with the Raspberry Pi HDMI port facing downwards.
     Example post params: json={"rotation": 270}
     Allowed values [0, 90, 180, 270]
@@ -158,7 +159,10 @@ def display_temp() -> str:
     Shows the current temp - fetched from sense hat
     :return: str
     """
-    pass
+    temp_img_data = ITD(int(11)).return_formatted_dict()
+    sense.set_pixels(PatternList(temp_img_data, False).create_pattern_list())
+    return str(sense.get_pixels())
+
 
 @app.route("/")
 def test_flask() -> str:
