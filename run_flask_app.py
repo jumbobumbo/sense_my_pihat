@@ -159,6 +159,9 @@ def display_temp() -> str:
     Shows the current temp - fetched from sense hat
     :return: str
     """
+    # set sense hat rotation
+    sense.set_rotation(global_vals.rotation_deg)
+
     temp_img_data = ITD(ctemp()).return_formatted_dict()
     sense.set_pixels(PatternList(temp_img_data, False).create_pattern_list())
     return str(sense.get_pixels())
