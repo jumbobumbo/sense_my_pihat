@@ -2,6 +2,8 @@ from json import load
 from pathlib import Path
 from collections import defaultdict
 
+# root DIR of project
+parent_path = Path(__file__).parent.parent
 
 def load_json(*args, parent_dir: str = 'patterns'):
     """
@@ -9,7 +11,7 @@ def load_json(*args, parent_dir: str = 'patterns'):
     param: args: str (sub dirs and file under parent DIR)
     param: parent_dir: str - Parent folder of your json files
     """
-    file_path = Path(parent_dir)
+    file_path = Path.joinpath(parent_path, parent_dir)
     for arg in args:
         file_path = Path.joinpath(file_path, arg)
 
