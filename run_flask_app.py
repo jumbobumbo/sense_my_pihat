@@ -64,7 +64,7 @@ def ui_command(red=None, green=None, blue=None, qtype=None):
         else:
             pattern_type = 0
 
-        # process the user inputted data so it can be used for list generation 
+        # process the user inputted data so it can be used for list generation
         processed_data = ProcessMultiDict(form_copy).post_data_to_nested_lists()
         # send img data to hat - GeneratePatternFromList creates the required list of nested list for qtype 0 or 1
         sense.set_pixels(GeneratePatternFromList(processed_data, pattern_type).pattern_gen())
@@ -159,7 +159,7 @@ def display_temp() -> str:
     Shows the current temp - fetched from sense hat
     :return: str
     """
-    temp_img_data = ITD(int(11)).return_formatted_dict()
+    temp_img_data = ITD(ctemp()).return_formatted_dict()
     sense.set_pixels(PatternList(temp_img_data, False).create_pattern_list())
     return str(sense.get_pixels())
 
@@ -172,6 +172,9 @@ def test_flask() -> str:
     """
     return "<h1>Pages:</h1><p>/ui-command/</p><p>/get-command/</p><p>/post_rotation/</p>" \
             "<p>/post-set-img/</p>"
+
+
+def ctemp(): return int(sense.get_temperature())  # returns temp from sense hat
 
 
 def list_decoder(list_to_decode: str) -> list:
@@ -195,10 +198,6 @@ def list_decoder(list_to_decode: str) -> list:
 
 # get ip address of device
 host_ip = str(check_output(['hostname', '-I'])).strip("b'").split(" ")[0]
-
-
-# global functions
-def ctemp(): return int(sense.get_temperature())  # returns temp from sense hat
 
 
 if __name__ == "__main__":
